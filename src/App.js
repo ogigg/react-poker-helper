@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import './App.css';
 import Card from '@material-ui/core/Card';
@@ -7,9 +7,21 @@ import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
 import { red } from '@material-ui/core/colors';
 import Grid from '@material-ui/core/Grid';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+import RulesPage from './Rules'
+
 
 const useStyles = makeStyles(theme => ({
   card: {
+      '-webkit-user-select': 'none', 
+      '-moz-user-select': 'none',  
+      '-ms-user-select': 'none',   
+      'user-select': 'none',
       // fontWeight: 'bold',
       // fontSize: "100px",
       height: "15em",
@@ -31,13 +43,34 @@ const useStyles = makeStyles(theme => ({
   },
 
 }));
+// function RulesPage(){
+//   console.log("TEST");
+//   return (
+      
+//       <div>heelo test</div>
+//   );
+//   }
+function Header(props){
+  let button;
+  if(props.page == "rules"){
+    button = 
+    <Button component={Link} to="/rules" variant="contained">
+      Zasady gry
+    </Button>
+  }
+  else{
+    button = 
+    <Button component={Link} to="/home" variant="contained">
+      Powrót
+    </Button>
+  }
 
-function Header(){
   return (
     <div className="header container">
     Aplikacja wspomagająca grę w pokera
-    <Button variant="contained" >Zasady</Button>
+    {button}
     </div>
+
   );
 }
 
@@ -100,17 +133,38 @@ function BaseCard(props) {
   );
 }
 
-function App() {
+function HomePage(){
   return (
+    <Grid container alignContent = "center" direction='row'>
+    <BaseCard color="red" number="6" suit = "club"></BaseCard>
+    <BaseCard color="black" number="J" suit = "diamond"></BaseCard>
+    <BaseCard color="red" number="A" suit = "spade"></BaseCard>
+    <BaseCard color="red" number="1" suit = "heart"></BaseCard>
+  </Grid>
+  );
+}
+ 
+function App() {
+  const [page, setPage] = useState(
+    "rules"
+  );
+  return (
+    <Router>
     <div className="App">
-      <Header/>
-      <Grid container alignContent = "center" direction='row'>
-        <BaseCard color="red" number="6" suit = "club"></BaseCard>
-        <BaseCard color="black" number="J" suit = "diamond"></BaseCard>
-        <BaseCard color="red" number="A" suit = "spade"></BaseCard>
-        <BaseCard color="red" number="1" suit = "heart"></BaseCard>
-      </Grid>
+      <Header page = {page}/>
+      <Switch>
+      <Route path="/rules" render={props => ( setPage("home"),
+                    <RulesPage />
+                )} >
+        </Route>
+      <Route path="/" render={props => ( setPage("rules"),
+                    <HomePage />
+                )} >
+        </Route>
+      </Switch>
+
     </div>
+    </Router>
   );
 }
 
