@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 import './App.css';
 import Card from '@material-ui/core/Card';
@@ -14,7 +14,9 @@ import {
   Link
 } from "react-router-dom";
 import RulesPage from './Rules'
-
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -27,6 +29,14 @@ const useStyles = makeStyles(theme => ({
       height: "15em",
       width: "11em",
       margin: '10px',
+  },
+  cardPlaceHolder: {
+    height: "15vw",
+    width: "10vw",
+    borderStyle: "dashed",
+  },
+  addNewCardBtnChildren: {
+    flex: '1',
   },
   suit: {
     color: theme => theme.color,
@@ -43,16 +53,10 @@ const useStyles = makeStyles(theme => ({
   },
 
 }));
-// function RulesPage(){
-//   console.log("TEST");
-//   return (
-      
-//       <div>heelo test</div>
-//   );
-//   }
+
 function Header(props){
   let button;
-  if(props.page == "rules"){
+  if(props.page === "rules"){
     button = 
     <Button component={Link} to="/rules" variant="contained">
       Zasady gry
@@ -83,27 +87,110 @@ function CardSuit(props){
       </div>
     )
   }
-  if(props.suit === "spade"){
+  else if(props.suit === "spade"){
     return(
-      <div className={`${props.size == 'big'? classes.bigSuit : "" } ${classes.suit}`}>
+      <div className={`${props.size === 'big'? classes.bigSuit : "" } ${classes.suit}`}>
         &#9824;
       </div>
     )
   }
-  if(props.suit === "heart"){
+  else if(props.suit === "heart"){
     return(
-      <div className={`${props.size == 'big'? classes.bigSuit : "" } ${classes.suit}`}>
-          &#9829;
+      <div className={`${props.size === 'big'? classes.bigSuit : "" } ${classes.suit}`}>
+        &#9829;
       </div>
     )
   }
-  if(props.suit === "club"){
+  else if(props.suit === "club"){
     return(
-      <div className={`${props.size == 'big'? classes.bigSuit : "" } ${classes.suit}`}>
-          &#9827;
+      <div className={`${props.size === 'big'? classes.bigSuit : "" } ${classes.suit}`}>
+        &#9827;
       </div>
     )
   }
+  else { //return blank
+    return(
+      <div className={`${props.size === 'big'? classes.bigSuit : "" } ${classes.suit}`}>
+        &nbsp;
+      </div>
+    )
+  }
+}
+
+function AddNewCardBtn(props){
+  const {cardNumber: [cardNumber, setCardNumber]} = {
+    cardNumber: useState(0),
+    ...(props.state || {})};
+  const {suit: [suit, setSuit]} = {
+    suit: useState(0),
+    ...(props.state || {})};
+  const {isCardCreated: [isCardCreated, setIsCardCreated]} = {
+    isCardCreated: useState(0),
+    ...(props.state || {})};  
+
+
+  const classes = useStyles();
+
+
+  const onAddCardClick = e => {
+    e.preventDefault();
+    console.log("onAddCardClick");
+    setIsCardCreated(true);
+  }
+  const handleCardNumberChange = event =>{
+    setCardNumber(event.target.value); 
+  }
+  const handleCardSuitChange = event =>{
+    setSuit(event.target.value);
+  }
+  const MenuItemsNumbers = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'].map((number) =>
+    <MenuItem value={number}>{number}</MenuItem>
+  );
+  const MenuItemsSuits = ['diamond','heart','spade','ace'].map((suit) =>
+    <MenuItem value={suit}>{suit}</MenuItem>
+  );
+  return(
+    // <div >
+    <div className={classes.addNewCardBtnChildren }>
+    <Grid container direction = "column" justify="center" alignItems="stretch" >
+      <div >
+    <InputLabel id="number-id">Figura:</InputLabel>
+      <Select
+        labelId="number-id"
+        id="number-id"
+        value={cardNumber}
+        onChange={handleCardNumberChange}>
+          {MenuItemsNumbers}
+      </Select>
+      </div>
+      <div >
+    <InputLabel id="suit-id">Kolor:</InputLabel>
+      <Select
+        labelId="suit-id"
+        id="suit-id"
+        value={suit.suit}
+        onChange={handleCardSuitChange}>
+          {MenuItemsSuits}
+      </Select>
+      </div>
+      <div >
+        <Button variant="contained" color = "primary" onClick = {onAddCardClick} >Dodaj Kartę</Button>
+      </div>
+    </Grid>
+    </div>
+  );
+}
+
+
+function CardPlaceHolder(props){
+  const classes = useStyles();
+  return(
+    <Grid item>
+    <div className={classes.cardPlaceHolder}>
+      {props.component}
+    </div>
+    </Grid>
+  );
 }
 
 function BaseCard(props) {
@@ -133,14 +220,68 @@ function BaseCard(props) {
   );
 }
 
+let cardsArray = []; //TODO change this ugly thing
 function HomePage(){
+  const classes = useStyles();
+  const [suit, setSuit] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [isCardCreated, setIsCardCreated] = useState('');
+  const state = {
+    suit : [suit, setSuit],
+    cardNumber: [cardNumber, setCardNumber],
+    isCardCreated: [isCardCreated, setIsCardCreated],
+  }
+  if(isCardCreated){
+   cardsArray.push(<BaseCard color="red" number={cardNumber} suit = {suit}></BaseCard>);
+    setIsCardCreated(false);
+    console.log("Zmieniono!");
+    console.log(cardsArray);
+  }
+
   return (
-    <Grid container alignContent = "center" direction='row'>
-    <BaseCard color="red" number="6" suit = "club"></BaseCard>
-    <BaseCard color="black" number="J" suit = "diamond"></BaseCard>
-    <BaseCard color="red" number="A" suit = "spade"></BaseCard>
-    <BaseCard color="red" number="1" suit = "heart"></BaseCard>
-  </Grid>
+    <div>
+      <h2>Karty na stole: {suit} i {cardNumber} oraz {isCardCreated} {cardsArray}</h2>
+      {/* <AddNewCardBtn></AddNewCardBtn> */}
+        <Grid container spacing={1}>
+          <Grid container item xs = {8} spacing={1}>
+            <CardPlaceHolder/>
+            <CardPlaceHolder/>
+            <CardPlaceHolder/>
+            <CardPlaceHolder/>
+            
+            <CardPlaceHolder/>
+          </Grid>
+
+
+          <Grid container item xs = {4} alignItems="center" justify="flex-end">
+            <CardPlaceHolder component={
+              <AddNewCardBtn 
+                state = {state}
+              />
+            }/>
+          </Grid>
+
+          <h2>Karty w ręku:</h2>
+          <Grid container item spacing={1}>
+            <CardPlaceHolder/>
+            <CardPlaceHolder/>
+          </Grid>
+        </Grid>
+
+      {/* <Grid container>
+        <CardPlaceHolder/>
+        <CardPlaceHolder/>
+        <CardPlaceHolder/>
+        <CardPlaceHolder/>
+        <CardPlaceHolder/>
+      </Grid> */}
+    {/* <Grid container alignContent = "center" direction='row'>
+      <BaseCard color="red" number="6" suit = "club"></BaseCard>
+      <BaseCard color="black" number="J" suit = "diamond"></BaseCard>
+      <BaseCard color="red" number="A" suit = "spade"></BaseCard>
+      <BaseCard color="red" number="1" suit = "heart"></BaseCard>
+    </Grid> */}
+  </div>
   );
 }
  
