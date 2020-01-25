@@ -17,6 +17,10 @@ import RulesPage from './Rules'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
+import { useDrag } from 'react-dnd'
+import  { ItemTypes }  from './ItemTypes'
+import Backend from 'react-dnd-html5-backend'
+import { DndProvider } from 'react-dnd'
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -146,13 +150,13 @@ function AddNewCardBtn(props){
   const MenuItemsNumbers = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'].map((number) =>
     <MenuItem value={number}>{number}</MenuItem>
   );
-  const MenuItemsSuits = ['diamond','heart','spade','ace'].map((suit) =>
+  const MenuItemsSuits = ['diamond','heart','spade','club'].map((suit) =>
     <MenuItem value={suit}>{suit}</MenuItem>
   );
   return(
     // <div >
     <div className={classes.addNewCardBtnChildren }>
-    <Grid container direction = "column" justify="center" alignItems="stretch" >
+    <Grid container direction = "row" justify="flex-end" alignItems="center" >
       <div >
     <InputLabel id="number-id">Figura:</InputLabel>
       <Select
@@ -194,9 +198,15 @@ function CardPlaceHolder(props){
 }
 
 function BaseCard(props) {
+  const [{ isDragging }, drag] = useDrag({
+    item: { type: ItemTypes.CARD },
+    collect: monitor => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  })
   const classes = useStyles(props);
   return(
-    <div className={classes.card}>
+    <div className={classes.card} ref={drag}>
     <Card >
       <CardContent >
         <Grid container direction = "column" alignContent='flex-start'>
@@ -220,7 +230,9 @@ function BaseCard(props) {
   );
 }
 
-let cardsArray = []; //TODO change this ugly thing
+var cardsDeckArray = []; //TODO change this ugly thing
+var cardsHandArray = []; //TODO change this ugly thing
+var cardCreated ;
 function HomePage(){
   const classes = useStyles();
   const [suit, setSuit] = useState('');
@@ -232,39 +244,48 @@ function HomePage(){
     isCardCreated: [isCardCreated, setIsCardCreated],
   }
   if(isCardCreated){
-   cardsArray.push(<BaseCard color="red" number={cardNumber} suit = {suit}></BaseCard>);
+    cardCreated = <BaseCard color="red" number={cardNumber} suit = {suit}></BaseCard>;
+    //cardsDeckArray.push(<BaseCard color="red" number={cardNumber} suit = {suit}></BaseCard>);
+    console.log(cardCreated)
     setIsCardCreated(false);
     console.log("Zmieniono!");
-    console.log(cardsArray);
+    console.log(cardsDeckArray);
   }
 
   return (
     <div>
-      <h2>Karty na stole: {suit} i {cardNumber} oraz {isCardCreated} {cardsArray}</h2>
+      <DndProvider backend={Backend}>
+      <Grid container>
+        <h2>Karty na stole: </h2>
+        <AddNewCardBtn state = {state}/>
+      </Grid>
+      
       {/* <AddNewCardBtn></AddNewCardBtn> */}
         <Grid container spacing={1}>
           <Grid container item xs = {8} spacing={1}>
-            <CardPlaceHolder/>
-            <CardPlaceHolder/>
-            <CardPlaceHolder/>
-            <CardPlaceHolder/>
-            
-            <CardPlaceHolder/>
+            <CardPlaceHolder component={cardsDeckArray[0]}/>
+            <CardPlaceHolder component={cardsDeckArray[1]}/>
+            <CardPlaceHolder component={cardsDeckArray[2]}/>
+            <CardPlaceHolder component={cardsDeckArray[3]}/>
+            <CardPlaceHolder component={cardsDeckArray[4]}/>
           </Grid>
 
 
           <Grid container item xs = {4} alignItems="center" justify="flex-end">
             <CardPlaceHolder component={
-              <AddNewCardBtn 
-                state = {state}
-              />
-            }/>
+              
+              <div>{cardCreated}</div>
+              //
+              
+              }
+            />
+            
           </Grid>
 
           <h2>Karty w ręku:</h2>
           <Grid container item spacing={1}>
-            <CardPlaceHolder/>
-            <CardPlaceHolder/>
+            <CardPlaceHolder component={cardsDeckArray[5]}/>
+            <CardPlaceHolder component={cardsDeckArray[6]}/>
           </Grid>
         </Grid>
 
@@ -281,6 +302,7 @@ function HomePage(){
       <BaseCard color="red" number="A" suit = "spade"></BaseCard>
       <BaseCard color="red" number="1" suit = "heart"></BaseCard>
     </Grid> */}
+    </DndProvider>
   </div>
   );
 }
