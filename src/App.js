@@ -22,43 +22,8 @@ import  { ItemTypes }  from './ItemTypes'
 import Backend from 'react-dnd-html5-backend'
 import { DndProvider } from 'react-dnd'
 import { useDrop } from 'react-dnd'
-
-
-const useStyles = makeStyles(theme => ({
-  card: {
-      '-webkit-user-select': 'none', 
-      '-moz-user-select': 'none',  
-      '-ms-user-select': 'none',   
-      'user-select': 'none',
-      // fontWeight: 'bold',
-      // fontSize: "100px",
-      height: "15em",
-      width: "11em",
-      margin: '10px',
-  },
-  cardPlaceHolder: {
-    height: "15vw",
-    width: "10vw",
-    borderStyle: "dashed",
-  },
-  addNewCardBtnChildren: {
-    flex: '1',
-  },
-  suit: {
-    color: theme => theme.color,
-    fontSize: '3em',
-    margin: "-0.2em",
-  },
-  bigSuit: {
-    fontSize: "11em",
-    margin: "-0.5em",
-  },
-  cardNumber: {
-    fontWeight: "bold",
-    fontSize: "3em",
-  },
-
-}));
+import { BaseCard } from './card'
+import { useStyles } from './styles'
 
 function Header(props){
   let button;
@@ -84,112 +49,6 @@ function Header(props){
   );
 }
 
-function BaseCard(props){
-  const {cardNumber: [cardNumber, setCardNumber]} = {
-    cardNumber: useState(0),
-    ...(props.state || {})};
-  const {suit: [suit, setSuit]} = {
-    suit: useState(0),
-    ...(props.state || {})};
-  const {isCardCreated: [isCardCreated, setIsCardCreated]} = {
-    isCardCreated: useState(0),
-    ...(props.state || {})};  
-  const {placeholderId: [placeholderId, setPlaceholderId]} = {
-    placeholderId: useState(0),
-    ...(props.state || {})};  
-
-  const [{ isDragging }, drag] = useDrag({
-    item: {suit: props.suit, number: props.number,type: ItemTypes.CARD },
-    end: (item, monitor) => {
-      const dropResult = monitor.getDropResult()
-      
-      if (item && dropResult) {
-        console.log(item);
-        console.log(dropResult.name);
-          setCardNumber(props.number); 
-          setSuit(props.suit);
-          setPlaceholderId(dropResult.name);
-          setIsCardCreated(true);
-          //alert(`You dropped ${item.number} into ${dropResult.name}!`)
-      }
-    },
-    collect: monitor => ({
-      isDragging: !!monitor.isDragging(),
-    }),
-  })
-  const opacity = isDragging ? 0.1 : 1
-  const classes = useStyles(props);
-  var color = 'red';
-  if(props.suit == "hearth" || props.suit == "diamond"){
-    color = 'red';
-  }
-  if(props.suit == "spade" || props.suit == "club"){
-    color = 'black';
-  }
-
-
-  return(
-    <div className={classes.card} ref={drag}>
-    <Card style={{ opacity }} >
-      <CardContent >
-        <Grid container direction = "column" alignContent='flex-start'>
-          <Grid item className={classes.cardNumber}>
-            {props.number}
-          </Grid>
-          <CardSuit suit={props.suit} color={color}></CardSuit>
-        </Grid>
-        <Grid container  direction="column" alignItems="center">
-          <CardSuit suit = {props.suit} size="big" color = {color} ></CardSuit>
-        </Grid>
-        <Grid container direction = "column" alignContent='flex-end'>
-          <CardSuit suit={props.suit} color={color}></CardSuit>
-          <Grid item className={classes.cardNumber}>
-            {props.number}
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
-    </div>
-  );
-}
-function CardSuit(props){
-  const classes = useStyles(props);
-  if(props.suit === "diamond"){
-    return(
-      <div className={`${props.size == 'big'? classes.bigSuit : "" } ${classes.suit}`}>
-        &#9830;
-      </div>
-    )
-  }
-  else if(props.suit === "spade"){
-    return(
-      <div className={`${props.size === 'big'? classes.bigSuit : "" } ${classes.suit}`}>
-        &#9824;
-      </div>
-    )
-  }
-  else if(props.suit === "heart"){
-    return(
-      <div className={`${props.size === 'big'? classes.bigSuit : "" } ${classes.suit}`}>
-        &#9829;
-      </div>
-    )
-  }
-  else if(props.suit === "club"){
-    return(
-      <div className={`${props.size === 'big'? classes.bigSuit : "" } ${classes.suit}`}>
-        &#9827;
-      </div>
-    )
-  }
-  else { //return blank
-    return(
-      <div className={`${props.size === 'big'? classes.bigSuit : "" } ${classes.suit}`}>
-        &nbsp;
-      </div>
-    )
-  }
-}
 
 function AddNewCardBtn(props){
   const {cardNumber: [cardNumber, setCardNumber]} = {
@@ -298,26 +157,31 @@ function HomePage(){
   const [cardNumber, setCardNumber] = useState('');
   const [isCardCreated, setIsCardCreated] = useState('');
   const [placeholderId, setPlaceholderId] = useState('');
+  const [sourceId, setSourceId] = useState('');
   const state = {
     suit : [suit, setSuit],
     cardNumber: [cardNumber, setCardNumber],
     isCardCreated: [isCardCreated, setIsCardCreated],
     placeholderId: [placeholderId, setPlaceholderId],
+    sourceId: [sourceId, setSourceId],
   }
+
+  
   if(isCardCreated){
     console.log("Upuszczono na : " + placeholderId)
     if(placeholderId == ''){
-      cardCreated = <BaseCard color="red" number={cardNumber} suit = {suit} state = {state}></BaseCard>;
-      
+      cardCreated = <BaseCard color="red" number={cardNumber} suit = {suit} state = {state} sourceId = {-1}></BaseCard>;
       console.log(cardCreated)
     }
     else{
-      console.log("tworzem kartem")
-      console.log(placeholderId);
-      console.log(cardNumber);
-      console.log(suit);
-      cardsDeckArray[placeholderId] = <BaseCard color="red" number={cardNumber} suit = {suit} state = {state}></BaseCard>;
+      console.log("Upuszczono na : " + placeholderId)
+      console.log("Upuszczono z : " + sourceId)
+      cardsDeckArray[placeholderId] = <BaseCard color="red" number={cardNumber} suit = {suit} state = {state} sourceId = {placeholderId}></BaseCard>;
+      
       cardCreated = <div></div>;
+      if(sourceId != -1){
+        cardsDeckArray[sourceId] = <div></div>;
+      }
       setPlaceholderId('');
     }
     
@@ -360,22 +224,16 @@ function HomePage(){
           <Grid container item spacing={1}>
             <CardPlaceHolder id ="5" component={cardsDeckArray[5]}/>
             <CardPlaceHolder id ="6" component={cardsDeckArray[6]}/>
+            <Grid container item xs = {9} alignItems="center" justify="flex-end">
+            <CardPlaceHolder component={
+              <div>Twoj wynik to:</div> 
+              }
+            />
           </Grid>
-        </Grid>
+          </Grid>
 
-      {/* <Grid container>
-        <CardPlaceHolder/>
-        <CardPlaceHolder/>
-        <CardPlaceHolder/>
-        <CardPlaceHolder/>
-        <CardPlaceHolder/>
-      </Grid> */}
-    {/* <Grid container alignContent = "center" direction='row'>
-      <BaseCard color="red" number="6" suit = "club"></BaseCard>
-      <BaseCard color="black" number="J" suit = "diamond"></BaseCard>
-      <BaseCard color="red" number="A" suit = "spade"></BaseCard>
-      <BaseCard color="red" number="1" suit = "heart"></BaseCard>
-    </Grid> */}
+          
+        </Grid>
     </DndProvider>
   </div>
   );
