@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, setState, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 import './App.css';
 import Card from '@material-ui/core/Card';
@@ -25,37 +25,35 @@ import { useDrop } from 'react-dnd'
 import { useStyles } from './styles'
 
 export const BaseCard = (props) => {
-    const {cardNumber: [cardNumber, setCardNumber]} = {
-      cardNumber: useState(0),
-      ...(props.state || {})};
-    const {suit: [suit, setSuit]} = {
-      suit: useState(0),
-      ...(props.state || {})};
-    const {isCardCreated: [isCardCreated, setIsCardCreated]} = {
-      isCardCreated: useState(0),
-      ...(props.state || {})};  
-    const {placeholderId: [placeholderId, setPlaceholderId]} = {
-      placeholderId: useState(0),
-      ...(props.state || {})};  
-    const {sourceId: [sourceId, setSourceId]} = {
-      sourceId: useState(0),
-      ...(props.state || {})};  
+    const {cardAttr: [cardAttr, setCardAttr]} = {
+      cardAttr: useState(0),
+      ...(props.state || {})
+    }; 
 
   
     const [{ isDragging }, drag] = useDrag({
-      item: {suit: props.suit, number: props.number, source: props.sourceId ,type: ItemTypes.CARD },
+      item: {cardAttr ,type: ItemTypes.CARD },
       end: (item, monitor) => {
         const dropResult = monitor.getDropResult()
         
         if (item && dropResult) {
           console.log("Upuszczono!");
+          console.log(cardAttr);
           console.log(item);
-          console.log(item.source);
-            setCardNumber(props.number); 
-            setSuit(props.suit);
-            setPlaceholderId(dropResult.name);
-            setIsCardCreated(true);
-            setSourceId(props.sourceId);
+          console.log(item.cardAttr.source);
+          setCardAttr({
+            ...cardAttr, 
+            isNowCreated: true,
+            destination: dropResult.name,
+            source: props.sourceId,
+          });
+
+          const { number,suit,source,isNowCreated,destination} = cardAttr;
+            // setCardNumber(props.number); 
+            // setSuit(props.suit);
+            // setPlaceholderId(dropResult.name);
+            // setIsCardCreated(true);
+            // setSourceId(props.sourceId);
             //alert(`You dropped ${item.number} into ${dropResult.name}!`)
         }
       },

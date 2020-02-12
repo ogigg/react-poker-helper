@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect ,setState, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 import './App.css';
 import Card from '@material-ui/core/Card';
@@ -51,31 +51,28 @@ function Header(props){
 
 
 function AddNewCardBtn(props){
-  const {cardNumber: [cardNumber, setCardNumber]} = {
-    cardNumber: useState(0),
-    ...(props.state || {})};
-  const {suit: [suit, setSuit]} = {
-    suit: useState(0),
-    ...(props.state || {})};
-  const {isCardCreated: [isCardCreated, setIsCardCreated]} = {
-    isCardCreated: useState(0),
-    ...(props.state || {})};  
 
-
+  const {cardAttr: [cardAttr, setCardAttr]} = {
+    cardAttr: useState(0),
+    ...(props.state || {})
+  };
   const classes = useStyles();
-
-
+  
   const onAddCardClick = e => {
     e.preventDefault();
     console.log("onAddCardClick");
-    setIsCardCreated(true);
+    
+    setCardAttr({...cardAttr, source: -1, destination: -1, isNowCreated: true});
+    console.log(cardAttr);
   }
   const handleCardNumberChange = event =>{
-    setCardNumber(event.target.value); 
+    setCardAttr({...cardAttr, number: event.target.value});
   }
   const handleCardSuitChange = event =>{
-    setSuit(event.target.value);
+    setCardAttr({...cardAttr, suit: event.target.value});
   }
+
+ 
   const MenuItemsNumbers = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'].map((number) =>
     <MenuItem value={number}>{number}</MenuItem>
   );
@@ -91,7 +88,7 @@ function AddNewCardBtn(props){
       <Select
         labelId="number-id"
         id="number-id"
-        value={cardNumber}
+        value={cardAttr.number}
         onChange={handleCardNumberChange}>
           {MenuItemsNumbers}
       </Select>
@@ -101,7 +98,7 @@ function AddNewCardBtn(props){
       <Select
         labelId="suit-id"
         id="suit-id"
-        value={suit.suit}
+        value={cardAttr.suit}
         onChange={handleCardSuitChange}>
           {MenuItemsSuits}
       </Select>
@@ -109,6 +106,10 @@ function AddNewCardBtn(props){
       <div >
         <Button variant="contained" color = "primary" onClick = {onAddCardClick} >Dodaj Kartę</Button>
       </div>
+      {/* {cardAttr.number} i 
+      {cardAttr.suit} i
+      {cardAttr.source} i
+      {cardAttr.isNowCreated} i */}
     </Grid>
     </div>
   );
@@ -158,29 +159,37 @@ function HomePage(){
   const [isCardCreated, setIsCardCreated] = useState('');
   const [placeholderId, setPlaceholderId] = useState('');
   const [sourceId, setSourceId] = useState('');
+  const [cardAttr, setCardAttr] = useState({
+     number: 5, 
+     suit: 'heart' , 
+     source: '', 
+     isNowCreated : false, 
+     destination: ''
+    });
   const state = {
-    suit : [suit, setSuit],
-    cardNumber: [cardNumber, setCardNumber],
-    isCardCreated: [isCardCreated, setIsCardCreated],
-    placeholderId: [placeholderId, setPlaceholderId],
-    sourceId: [sourceId, setSourceId],
+    cardAttr: [cardAttr, setCardAttr],
   }
-
-  
-  if(isCardCreated){
-    console.log("Upuszczono na : " + placeholderId)
-    if(placeholderId == ''){
-      cardCreated = <BaseCard color="red" number={cardNumber} suit = {suit} state = {state} sourceId = {-1}></BaseCard>;
+  if(cardAttr.isNowCreated){
+    // console.log("Upuszczono na : " + cardAttr.destination)
+    setCardAttr({...cardAttr, isNowCreated: false});
+    if(cardAttr.destination == -1){
+      cardCreated = <BaseCard color="red" number={cardAttr.number} suit = {cardAttr.suit} state = {state} sourceId = {-1}></BaseCard>;
       console.log(cardCreated)
     }
     else{
-      console.log("Upuszczono na : " + placeholderId)
-      console.log("Upuszczono z : " + sourceId)
-      cardsDeckArray[placeholderId] = <BaseCard color="red" number={cardNumber} suit = {suit} state = {state} sourceId = {placeholderId}></BaseCard>;
+      console.log("Upuszczono na : " + cardAttr.destination)
+      console.log("Upuszczono z : " + cardAttr.source)
+      cardsDeckArray[cardAttr.destination] = 
+      <BaseCard color="red" 
+        number={cardAttr.number} 
+        suit = {cardAttr.suit} 
+        state = {state} 
+        sourceId = {cardAttr.destination}
+      ></BaseCard>;
       
       cardCreated = <div></div>;
-      if(sourceId != -1){
-        cardsDeckArray[sourceId] = <div></div>;
+      if(cardAttr.source != -1 && cardAttr.source != cardAttr.destination ){
+        cardsDeckArray[cardAttr.source] = <div></div>;
       }
       setPlaceholderId('');
     }
@@ -197,8 +206,7 @@ function HomePage(){
         <h2>Karty na stole: </h2>
         <AddNewCardBtn state = {state}/>
       </Grid>
-      
-      {/* <AddNewCardBtn></AddNewCardBtn> */}
+        {/* {cardAttr.number}/{cardAttr.suit}/{cardAttr.source}/{cardAttr.destination}/     */}
         <Grid container spacing={1}>
           <Grid container item xs = {8} spacing={1}>
             <CardPlaceHolder id ="0" component={cardsDeckArray[0]}/>
@@ -210,7 +218,7 @@ function HomePage(){
 
 
           <Grid container item xs = {4} alignItems="center" justify="flex-end">
-            <CardPlaceHolder component={
+            <CardPlaceHolder id ="-1" component={
               
               <div>{cardCreated}</div> 
               //
