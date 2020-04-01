@@ -34,9 +34,9 @@ export const useStyles = makeStyles(theme => ({
         'user-select': 'none',
         // fontWeight: 'bold',
         // fontSize: "100px",
-        height: "15em",
-        width: "11em",
-        margin: '10px',
+        height: "15vw",
+        width: "10vw",
+        // margin: '10px',
     },
     cardPlaceHolder: {
       height: "15vw",
@@ -48,16 +48,16 @@ export const useStyles = makeStyles(theme => ({
     },
     suit: {
       color: theme => theme.color,
-      fontSize: '3em',
-      margin: "-0.2em",
+      fontSize: '1vw',
+      margin: "-0.2vw",
     },
     bigSuit: {
-      fontSize: "11em",
-      margin: "-0.5em",
+      fontSize: "5vw",
+      margin: "-0.5vw",
     },
     cardNumber: {
       fontWeight: "bold",
-      fontSize: "3em",
+      fontSize: "2vw",
     },
   
   }));

@@ -24,6 +24,7 @@ import { DndProvider } from 'react-dnd'
 import { useDrop } from 'react-dnd'
 import { BaseCard } from './card'
 import { useStyles } from './styles'
+import { Result } from './PokerLogic'
 
 function Header(props){
   let button;
@@ -60,10 +61,10 @@ function AddNewCardBtn(props){
   
   const onAddCardClick = e => {
     e.preventDefault();
-    console.log("onAddCardClick");
+    // console.log("onAddCardClick");
     
     setCardAttr({...cardAttr, source: -1, destination: -1, isNowCreated: true});
-    console.log(cardAttr);
+    // console.log(cardAttr);
   }
   const handleCardNumberChange = event =>{
     setCardAttr({...cardAttr, number: event.target.value});
@@ -148,8 +149,15 @@ const  CardPlaceHolder = (props) => {
 }
 
 
-//var cardsDeckArray = [{id: 0, card: <div></div>},{id: 1, card: <div></div>},{id: 2, card: <div></div>},{id: 3, card: <div></div>},{id: 4, card: <div></div>}]; 
-var cardsDeckArray = [<div></div>,<div></div>,<div></div>,<div></div>,<div></div>,<div></div>,<div></div>]; 
+var cardsDeckArray = [
+  {id: 0, number: '', suit: '', card: <div></div>},
+  {id: 1, number: '', suit: '', card: <div></div>},
+  {id: 2, number: '', suit: '', card: <div></div>},
+  {id: 3, number: '', suit: '', card: <div></div>},
+  {id: 4, number: '', suit: '', card: <div></div>},
+  {id: 5, number: '', suit: '', card: <div></div>},
+  {id: 6, number: '', suit: '', card: <div></div>}]; 
+// var cardsDeckArray = [<div></div>,<div></div>,<div></div>,<div></div>,<div></div>,<div></div>,<div></div>]; 
 var cardsHandArray = []; //TODO change this ugly thing
 var cardCreated ;
 function HomePage(){
@@ -174,29 +182,33 @@ function HomePage(){
     setCardAttr({...cardAttr, isNowCreated: false});
     if(cardAttr.destination == -1){
       cardCreated = <BaseCard color="red" number={cardAttr.number} suit = {cardAttr.suit} state = {state} sourceId = {-1}></BaseCard>;
-      console.log(cardCreated)
+      // console.log(cardCreated)
     }
     else{
-      console.log("Upuszczono na : " + cardAttr.destination)
-      console.log("Upuszczono z : " + cardAttr.source)
-      cardsDeckArray[cardAttr.destination] = 
+      // console.log("Upuszczono na : " + cardAttr.destination)
+      // console.log("Upuszczono z : " + cardAttr.source)
+      cardsDeckArray[cardAttr.destination].suit = cardAttr.suit;
+      cardsDeckArray[cardAttr.destination].number = cardAttr.number;
+      cardsDeckArray[cardAttr.destination].card = 
       <BaseCard color="red" 
         number={cardAttr.number} 
         suit = {cardAttr.suit} 
         state = {state} 
         sourceId = {cardAttr.destination}
       ></BaseCard>;
-      
+      // console.log(cardsDeckArray[cardAttr.destination])
       cardCreated = <div></div>;
       if(cardAttr.source != -1 && cardAttr.source != cardAttr.destination ){
-        cardsDeckArray[cardAttr.source] = <div></div>;
+        cardsDeckArray[cardAttr.source].card = <div></div>;
+        cardsDeckArray[cardAttr.source].number = '';
+        cardsDeckArray[cardAttr.source].suit = '';
       }
       setPlaceholderId('');
     }
     
     setIsCardCreated(false);
-    console.log("Zmieniono!");
-    console.log(cardsDeckArray);
+    // console.log("Zmieniono!");
+    // console.log(cardsDeckArray);
   }
 
   return (
@@ -206,42 +218,40 @@ function HomePage(){
         <h2>Karty na stole: </h2>
         <AddNewCardBtn state = {state}/>
       </Grid>
-        {/* {cardAttr.number}/{cardAttr.suit}/{cardAttr.source}/{cardAttr.destination}/     */}
+      {/* {cardAttr.number}/{cardAttr.suit}/{cardAttr.source}/{cardAttr.destination}/     */}
+      <Grid container spacing={1}>
+        <Grid container item xs = {8} spacing={1}>
+          <CardPlaceHolder id ="0" component={cardsDeckArray[0].card}/>
+          <CardPlaceHolder id ="1" component={cardsDeckArray[1].card}/>
+          <CardPlaceHolder id ="2" component={cardsDeckArray[2].card}/>
+          <CardPlaceHolder id ="3" component={cardsDeckArray[3].card}/>
+          <CardPlaceHolder id ="4" component={cardsDeckArray[4].card}/>
+        </Grid>
+        <Grid container item xs = {4} alignItems="center" justify="flex-end">
+          <CardPlaceHolder id ="-1" component={
+            <div>{cardCreated}</div> 
+            }
+          />
+        </Grid>
+      </Grid>
+      <Grid>
+        <Grid container>
+          <h2>Karty w ręku:</h2>
+        </Grid>
         <Grid container spacing={1}>
-          <Grid container item xs = {8} spacing={1}>
-            <CardPlaceHolder id ="0" component={cardsDeckArray[0]}/>
-            <CardPlaceHolder id ="1" component={cardsDeckArray[1]}/>
-            <CardPlaceHolder id ="2" component={cardsDeckArray[2]}/>
-            <CardPlaceHolder id ="3" component={cardsDeckArray[3]}/>
-            <CardPlaceHolder id ="4" component={cardsDeckArray[4]}/>
-          </Grid>
-
-
-          <Grid container item xs = {4} alignItems="center" justify="flex-end">
-            <CardPlaceHolder id ="-1" component={
-              
-              <div>{cardCreated}</div> 
-              //
-              
-              }
-            />
+          <Grid container item spacing={1} xs = {8}>
+            <CardPlaceHolder id ="5" component={cardsDeckArray[5].card}/>
+            <CardPlaceHolder id ="6" component={cardsDeckArray[6].card}/>
             
           </Grid>
-
-          <h2>Karty w ręku:</h2>
-          <Grid container item spacing={1}>
-            <CardPlaceHolder id ="5" component={cardsDeckArray[5]}/>
-            <CardPlaceHolder id ="6" component={cardsDeckArray[6]}/>
-            <Grid container item xs = {9} alignItems="center" justify="flex-end">
-            <CardPlaceHolder component={
-              <div>Twoj wynik to:</div> 
-              }
-            />
+          <Grid container item xs = {4} alignItems="center" justify="flex-end">
+            {/* <CardPlaceHolder component={ */}
+              <Result deckArray = {cardsDeckArray}></Result>
+              {/* div>Twoj wynik to:</div> 
+              }/> */}
           </Grid>
-          </Grid>
-
-          
         </Grid>
+      </Grid>
     </DndProvider>
   </div>
   );
