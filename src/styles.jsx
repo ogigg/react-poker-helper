@@ -49,7 +49,7 @@ export const useStyles = makeStyles(theme => ({
     suit: {
       color: theme => theme.color,
       fontSize: '1vw',
-      margin: "-0.2vw",
+      margin: "-0.1vw",
     },
     bigSuit: {
       fontSize: "5vw",

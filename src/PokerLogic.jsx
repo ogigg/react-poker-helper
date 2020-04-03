@@ -72,36 +72,119 @@ const getNextNumber = (number) => {
     
 }
 
+
+
+
+const flush = (cards) => { //5 cards with the same color
+    let diamonds = 0;
+    let spades = 0;
+    let hearts = 0;
+    let clubs = 0;
+    cards.map(card => {
+        if(card.suit == 'spade')
+            spades++
+        if(card.suit == 'diamond')
+            diamonds++
+        if(card.suit == 'heart')
+            hearts++
+        if(card.suit == 'club')
+            clubs++
+    })
+    if(spades >=5)
+        return(<p> Kolor - Pik</p>);
+    if(diamonds >=5)
+        return(<p> Kolor - Karo</p>);
+    if(hearts >=5)
+        return(<p> Kolor - Kier</p>);
+    if(clubs >=5)
+        return(<p> Kolor - Trefl</p>);
+    else
+        return(<div></div>);
+
+}
+
 const straight = (cards) => { //5 cards in a row
     let isStraight = false;
     let cardsInRow = 0;
     let previousNumber = '';
-    cards.forEach(card => { 
-        console.log("Numerek : "+ card.number)
-
-        if(cardsInRow == 0){
-            previousNumber = card.number;
-            cardsInRow++;
-        }  
-        else{
-            if(card.number == getNextNumber(previousNumber)){
-                cardsInRow ++;
-                previousNumber = card.number;
-            }
-            else{
-                cardsInRow = 0;
-                previousNumber = '';
-            }
+    let sortedCards = sortCards(cards);
+    let cardsWithStraight = [];
+    console.log(sortedCards);
+    //check if ace is in cards and check for ace-straight (A 2 3 4 5) or (10 J Q K A)
+    if(sortedCards.some(o=>o.number == 'A'))
+        if( sortedCards.some(o=>o.number == '2') && 
+            sortedCards.some(o=>o.number == '3') &&
+            sortedCards.some(o=>o.number == '4') && 
+            sortedCards.some(o=>o.number == '5')){
+                isStraight=true;
+                cardsWithStraight=['A','2','3','4','5'];
         }
         
-        console.log("Numerek : "+ card.number)
-        console.log("Poprzedni : "+ previousNumber)
-        console.log("Z rzedu : "+ cardsInRow)
+    if(!isStraight){
+        for (let card of sortedCards) {
+            if(cardsInRow == 0){
+                previousNumber = card.number;
+                cardsInRow++;
+                cardsWithStraight.push(card.number);
+            }  
+            else{
+                if(getCardRank(card.number) == getCardRank(previousNumber)+1){
+                    cardsInRow ++;
+                    previousNumber = card.number;
+                    cardsWithStraight.push(card.number);
+                }
+                else{
+                    cardsInRow = 0;
+                    previousNumber = '';
+                    cardsWithStraight = [];
+                }
+            }
+            if(cardsInRow == 5){
+                isStraight=true;
+                break;
+                
+            }
+            
+            
+        }
+    }   
+    if(isStraight)
+        return(<p> Strit: ({cardsWithStraight.map(c=> {return (c + ", ");})})</p>);
         
-    })
-    return(<p> Strit: {cardsInRow}</p>);
+    else
+        return(<div></div>);
 
 }
+
+const getCardRank = (card) => {
+    const cardRank = parseInt(card);
+    if(isNaN(cardRank)){
+        if(card == '')
+            return 15;
+        if(card == 'J')
+            return 11;
+        if(card == 'Q')
+            return 12;
+        if(card == 'K')
+            return 13;
+        if(card == 'A')
+            return 14;
+    }
+    else 
+        return cardRank
+    
+}
+
+const sortCards = (cards) => {
+    //sorting cards ascending by number
+    const tempCards = [...cards]
+    return tempCards.sort(function(a, b){return getCardRank(a.number)-getCardRank(b.number)}) 
+}
+
+
+
+
+
 export const Result = (props) =>{
     let a = ''
     getNextNumber('3');
@@ -110,7 +193,7 @@ export const Result = (props) =>{
     // }
     let deckArray = props.deckArray;
     // let handArray = props.handArray;
-    return(<div>{howManyPairs(deckArray)} {threeOfAKind(deckArray)}  {straight(deckArray)}</div>);
+    return(<div>{howManyPairs(deckArray)} {threeOfAKind(deckArray)}  {straight(deckArray)} {flush(deckArray)}</div>);
 
     
 }

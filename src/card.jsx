@@ -37,10 +37,10 @@ export const BaseCard = (props) => {
         const dropResult = monitor.getDropResult()
         
         if (item && dropResult) {
-          console.log("Upuszczono!");
-          console.log(cardAttr);
-          console.log(item);
-          console.log(item.cardAttr.source);
+          // console.log("Upuszczono!");
+          // console.log(cardAttr);
+          // console.log(item);
+          // console.log(item.cardAttr.source);
           setCardAttr({
             ...cardAttr, 
             isNowCreated: true,
