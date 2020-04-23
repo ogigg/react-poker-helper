@@ -45,6 +45,8 @@ export const useStyles = makeStyles(theme => ({
     },
     addNewCardBtnChildren: {
       flex: '1',
+      // borderStyle: "dashed",
+      color: 'white'
     },
     suit: {
       color: theme => theme.color,
@@ -58,6 +60,10 @@ export const useStyles = makeStyles(theme => ({
     cardNumber: {
       fontWeight: "bold",
       fontSize: "2vw",
+    },
+    result: {
+      borderStyle: "dashed",
+      color: 'white'
     },
   
   }));

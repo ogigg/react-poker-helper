@@ -13,7 +13,7 @@ import {
   Route,
   Link
 } from "react-router-dom";
-import RulesPage from './Rules'
+import { RulesPage } from './Rules'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -25,7 +25,10 @@ import { useDrop } from 'react-dnd'
 import { BaseCard } from './card'
 import { useStyles } from './styles'
 import { Result } from './PokerLogic'
-
+import Fab from '@material-ui/core/Fab';
+// import AddIcon from '/material-ui-icons';
+import Tooltip from '@material-ui/core/Tooltip';
+import AddIcon from '@material-ui/icons/Add';
 function Header(props){
   let button;
   if(props.page === "rules"){
@@ -34,7 +37,7 @@ function Header(props){
       Zasady gry
     </Button>
   }
-  else{
+  else{ 
     button = 
     <Button component={Link} to="/home" variant="contained">
       Powrót
@@ -52,7 +55,6 @@ function Header(props){
 
 
 function AddNewCardBtn(props){
-
   const {cardAttr: [cardAttr, setCardAttr]} = {
     cardAttr: useState(0),
     ...(props.state || {})
@@ -77,8 +79,9 @@ function AddNewCardBtn(props){
   const MenuItemsNumbers = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'].map((number) =>
     <MenuItem value={number}>{number}</MenuItem>
   );
-  const MenuItemsSuits = ['diamond','heart','spade','club'].map((suit) =>
-    <MenuItem value={suit}>{suit}</MenuItem>
+  const suits = [{key: 'diamond', label : 'Karo'},{key: 'heart', label : 'Kier'},{key: 'spade', label : 'Pik'},{key: 'club', label : 'Trefl'}];
+  const MenuItemsSuits = suits.map((suit) =>
+    <MenuItem value={suit.key}>{suit.label}</MenuItem>
   );
   return(
     // <div >
@@ -128,7 +131,7 @@ const  CardPlaceHolder = (props) => {
   })
 
   const isActive = canDrop && isOver
-  let backgroundColor = 'white'
+  let backgroundColor = 'transparent'
   if (isActive) {
     backgroundColor = 'green'
   } else if (canDrop) {
@@ -160,6 +163,8 @@ var cardsDeckArray = [
 // var cardsDeckArray = [<div></div>,<div></div>,<div></div>,<div></div>,<div></div>,<div></div>,<div></div>]; 
 var cardsHandArray = []; //TODO change this ugly thing
 var cardCreated ;
+
+
 function HomePage(){
   const classes = useStyles();
   const [suit, setSuit] = useState('');
@@ -212,23 +217,23 @@ function HomePage(){
   }
 
   return (
-    <div>
+    <React.Fragment>
       <DndProvider backend={Backend}>
       <Grid container>
-        <h2>Karty na stole: </h2>
+        <h2 className = "h2-text">Karty na stole: </h2>
         <AddNewCardBtn state = {state}/>
       </Grid>
       {/* {cardAttr.number}/{cardAttr.suit}/{cardAttr.source}/{cardAttr.destination}/     */}
       <Grid container spacing={1}>
-        <Grid container item xs = {8} spacing={1}>
+        <Grid container item xs = {8} spacing={1} >
           <CardPlaceHolder id ="0" component={cardsDeckArray[0].card}/>
           <CardPlaceHolder id ="1" component={cardsDeckArray[1].card}/>
           <CardPlaceHolder id ="2" component={cardsDeckArray[2].card}/>
           <CardPlaceHolder id ="3" component={cardsDeckArray[3].card}/>
           <CardPlaceHolder id ="4" component={cardsDeckArray[4].card}/>
         </Grid>
-        <Grid container item xs = {4} alignItems="center" justify="flex-end">
-          <CardPlaceHolder id ="-1" component={
+        <Grid container item xs = {4} spacing={1} alignItems="center" justify="flex-end">
+          <CardPlaceHolder className = "card-back" id ="-1" component={
             <div>{cardCreated}</div> 
             }
           />
@@ -236,7 +241,7 @@ function HomePage(){
       </Grid>
       <Grid>
         <Grid container>
-          <h2>Karty w ręku:</h2>
+          <h2 className = "h2-text" >Karty w ręku:</h2>
         </Grid>
         <Grid container spacing={1}>
           <Grid container item spacing={1} xs = {8}>
@@ -245,15 +250,17 @@ function HomePage(){
             
           </Grid>
           <Grid container item xs = {4} alignItems="center" justify="flex-end">
-            {/* <CardPlaceHolder component={ */}
               <Result deckArray = {cardsDeckArray}></Result>
-              {/* div>Twoj wynik to:</div> 
-              }/> */}
           </Grid>
         </Grid>
+        <Tooltip title="Add" aria-label="add">
+        <Fab color="primary" className={classes.fab}>
+          <AddIcon />
+        </Fab>
+      </Tooltip>
       </Grid>
     </DndProvider>
-  </div>
+  </React.Fragment>
   );
 }
  
@@ -275,7 +282,6 @@ function App() {
                 )} >
         </Route>
       </Switch>
-
     </div>
     </Router>
   );

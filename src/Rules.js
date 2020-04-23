@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function RulesPage(){
+export const RulesPage = () => {
     return (
         <div>
             <h1>Zasady gry w pokera</h1>

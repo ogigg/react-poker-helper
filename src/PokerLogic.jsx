@@ -1,5 +1,5 @@
 import React, { useState, useEffect ,setState, useRef } from 'react';
-
+import { useStyles } from './styles'
 
 const alSameSuit = (cards) => {
     let suit = cards[0].suit; 
@@ -12,7 +12,7 @@ const alSameSuit = (cards) => {
 }
 
 
-const threeOfAKind = (cards) => {
+const getTriples = (cards) => {
     let totalNumberOfTriples = 0;
     ['2','3','4','5','6','7','8','9','10','J','Q','K','A'].map((number) =>{
         let numberOfTriples = 0;
@@ -29,6 +29,11 @@ const threeOfAKind = (cards) => {
         //     return true;
         // }
     })
+    return totalNumberOfTriples;
+}
+
+const threeOfAKind = (cards) => {
+    let totalNumberOfTriples = getTriples(cards);
     if(totalNumberOfTriples == 0) {
         return <div></div>
     }
@@ -37,7 +42,7 @@ const threeOfAKind = (cards) => {
     }
 }
 
-const howManyPairs = (cards) => {
+const getPairs = (cards) => {
     let totalNumberOfPairs = 0;
     ['2','3','4','5','6','7','8','9','10','J','Q','K','A'].map((number) =>{
         let numberOfPairs = 0;
@@ -48,7 +53,12 @@ const howManyPairs = (cards) => {
         })
         totalNumberOfPairs = totalNumberOfPairs + Math.floor(numberOfPairs/2);
     })
+    return totalNumberOfPairs
+   
+}
 
+const pairs = (cards) => {
+    let totalNumberOfPairs = getPairs(cards);
     if(totalNumberOfPairs == 0) {
         return <div></div>
     }
@@ -72,8 +82,113 @@ const getNextNumber = (number) => {
     
 }
 
+const straightFlush = (cards) => {
+    let isStraight = false;
+    let cardsInRow = 0;
+    let previousNumber = '';
+    let sortedCards = sortCards(cards);
+    let cardsWithStraight = [];
+    console.log(sortedCards);
+    let diamonds = 0;
+    let spades = 0;
+    let hearts = 0;
+    let clubs = 0;
+    if(!isStraight){
+        for (let card of sortedCards) {
+            if(cardsInRow == 0){
+                previousNumber = card.number;
+                cardsInRow++;
+                cardsWithStraight.push(card.number);
+                if(card.suit == 'spade')
+                    spades++
+                if(card.suit == 'diamond')
+                    diamonds++
+                if(card.suit == 'heart')
+                    hearts++
+                if(card.suit == 'club')
+                    clubs++
+            }  
+            else{
+                if(getCardRank(card.number) == getCardRank(previousNumber)+1){
+                    cardsInRow ++;
+                    previousNumber = card.number;
+                    cardsWithStraight.push(card.number);
+                    if(card.suit == 'spade')
+                        spades++
+                    if(card.suit == 'diamond')
+                        diamonds++
+                    if(card.suit == 'heart')
+                        hearts++
+                    if(card.suit == 'club')
+                        clubs++
+                }
+                else{
+                    //check if currently checked card in the same as previous one 
+                    //for example 6 7 7 8 9 10 
+
+                    if(getCardRank(card.number) == getCardRank(previousNumber)){
+                        previousNumber = card.number;
+                       
+                    }
+                    else{
+                        cardsInRow = 0;
+                        previousNumber = '';
+                        cardsWithStraight = [];
+                    }
+                    
+                }
+            }
+            if(cardsInRow == 5){
+                isStraight=true;
+                break;
+                
+            }
+            
+            
+        }
+    }
 
 
+    if(isStraight && (spades >=5 || diamonds >=5 || hearts >=5 || clubs >=5 ))
+        return(<p> Poker: ({cardsWithStraight.map(c=> {return (c + ", ");})})</p>);
+        
+    else
+        return(<div></div>);
+}
+
+const fullHouse = (cards) => { //One pair and three of a kind
+    console.log(`pary : ${getPairs(cards)} ${getTriples(cards)}`)
+    console.log()
+    if(cards.filter(c => c.suit != "").length >=5 && getPairs(cards) >= 1 && getTriples(cards) >= 1)
+        return(<p> Full </p>);
+    else
+        return(<div></div>);
+}
+
+const fourOfKind = (cards) =>{
+    let totalNumberOfFours = 0;
+    ['2','3','4','5','6','7','8','9','10','J','Q','K','A'].map((number) =>{
+        let numberOfFours = 0;
+        cards.forEach(card => {   
+            if(card.number == number){
+                numberOfFours ++;
+            }
+            
+        })
+        if(numberOfFours>=4){
+            totalNumberOfFours = totalNumberOfFours + Math.floor(numberOfFours/4);
+        }
+
+    })
+    if(totalNumberOfFours == 0) {
+        return <div></div>
+    }
+    else{
+        return(<p>Kareta</p>);
+    }
+
+
+}
 
 const flush = (cards) => { //5 cards with the same color
     let diamonds = 0;
@@ -134,9 +249,17 @@ const straight = (cards) => { //5 cards in a row
                     cardsWithStraight.push(card.number);
                 }
                 else{
-                    cardsInRow = 0;
-                    previousNumber = '';
-                    cardsWithStraight = [];
+                    //check if currently checked card in the same as previous one 
+                    //for example 6 7 7 8 9 10 
+                    if(getCardRank(card.number) == getCardRank(previousNumber)){
+                        previousNumber = card.number;
+                    }
+                    else{
+                        cardsInRow = 0;
+                        previousNumber = '';
+                        cardsWithStraight = [];
+                    }
+                    
                 }
             }
             if(cardsInRow == 5){
@@ -186,14 +309,16 @@ const sortCards = (cards) => {
 
 
 export const Result = (props) =>{
-    let a = ''
-    getNextNumber('3');
-    // if(isThreeOfAKind){
-    //     a = 'three'
-    // }
     let deckArray = props.deckArray;
-    // let handArray = props.handArray;
-    return(<div>{howManyPairs(deckArray)} {threeOfAKind(deckArray)}  {straight(deckArray)} {flush(deckArray)}</div>);
+    const classes = useStyles();
 
-    
+    return(<div className = {classes.result}>
+        {pairs(deckArray)} 
+        {threeOfAKind(deckArray)}  
+        {straight(deckArray)} 
+        {flush(deckArray)}
+        {fullHouse(deckArray)}
+        {fourOfKind(deckArray)}
+        {straightFlush(deckArray)}
+        </div>);
 }
