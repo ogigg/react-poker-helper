@@ -65,5 +65,27 @@ export const useStyles = makeStyles(theme => ({
       borderStyle: "dashed",
       color: 'white'
     },
+    avatar: {
+      backgroundColor: 'transparent',
+      'box-shadow': '0 0 3pt black', 
+    },
+
+    redColor: {
+      color: 'red'
+    },
+    blackColor: {
+      color: 'black'
+    },
+    cardsList: {
+      '-moz-column-count': 2,
+      '-moz-column-gap': '20px',
+      '-webkit-column-count': 2,
+      '-webkit-column-gap': '20px',
+      columnCount: 2,
+      columnGap: '20px',
+      padding: '20px',
+      margin: '20px',
+      spacing: '20px',
+    }
   
   }));

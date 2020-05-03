@@ -29,6 +29,9 @@ import Fab from '@material-ui/core/Fab';
 // import AddIcon from '/material-ui-icons';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
+import Zoom from '@material-ui/core/Zoom';
+import AddNewCardTooltip from './AddCardDialog';
+
 function Header(props){
   let button;
   if(props.page === "rules"){
@@ -53,71 +56,6 @@ function Header(props){
   );
 }
 
-
-function AddNewCardBtn(props){
-  const {cardAttr: [cardAttr, setCardAttr]} = {
-    cardAttr: useState(0),
-    ...(props.state || {})
-  };
-  const classes = useStyles();
-  
-  const onAddCardClick = e => {
-    e.preventDefault();
-    // console.log("onAddCardClick");
-    
-    setCardAttr({...cardAttr, source: -1, destination: -1, isNowCreated: true});
-    // console.log(cardAttr);
-  }
-  const handleCardNumberChange = event =>{
-    setCardAttr({...cardAttr, number: event.target.value});
-  }
-  const handleCardSuitChange = event =>{
-    setCardAttr({...cardAttr, suit: event.target.value});
-  }
-
- 
-  const MenuItemsNumbers = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'].map((number) =>
-    <MenuItem value={number}>{number}</MenuItem>
-  );
-  const suits = [{key: 'diamond', label : 'Karo'},{key: 'heart', label : 'Kier'},{key: 'spade', label : 'Pik'},{key: 'club', label : 'Trefl'}];
-  const MenuItemsSuits = suits.map((suit) =>
-    <MenuItem value={suit.key}>{suit.label}</MenuItem>
-  );
-  return(
-    // <div >
-    <div className={classes.addNewCardBtnChildren }>
-    <Grid container direction = "row" justify="flex-end" alignItems="center" >
-      <div >
-    <InputLabel id="number-id">Figura:</InputLabel>
-      <Select
-        labelId="number-id"
-        id="number-id"
-        value={cardAttr.number}
-        onChange={handleCardNumberChange}>
-          {MenuItemsNumbers}
-      </Select>
-      </div>
-      <div >
-    <InputLabel id="suit-id">Kolor:</InputLabel>
-      <Select
-        labelId="suit-id"
-        id="suit-id"
-        value={cardAttr.suit}
-        onChange={handleCardSuitChange}>
-          {MenuItemsSuits}
-      </Select>
-      </div>
-      <div >
-        <Button variant="contained" color = "primary" onClick = {onAddCardClick} >Dodaj Kartę</Button>
-      </div>
-      {/* {cardAttr.number} i 
-      {cardAttr.suit} i
-      {cardAttr.source} i
-      {cardAttr.isNowCreated} i */}
-    </Grid>
-    </div>
-  );
-}
 
 
 const  CardPlaceHolder = (props) => {
@@ -215,13 +153,12 @@ function HomePage(){
     // console.log("Zmieniono!");
     // console.log(cardsDeckArray);
   }
-
+  // useEffect([cardAttr]);
   return (
     <React.Fragment>
       <DndProvider backend={Backend}>
       <Grid container>
         <h2 className = "h2-text">Karty na stole: </h2>
-        <AddNewCardBtn state = {state}/>
       </Grid>
       {/* {cardAttr.number}/{cardAttr.suit}/{cardAttr.source}/{cardAttr.destination}/     */}
       <Grid container spacing={1}>
@@ -244,21 +181,26 @@ function HomePage(){
           <h2 className = "h2-text" >Karty w ręku:</h2>
         </Grid>
         <Grid container spacing={1}>
-          <Grid container item spacing={1} xs = {8}>
+          <Grid container item spacing={1} xs = {4}>
             <CardPlaceHolder id ="5" component={cardsDeckArray[5].card}/>
             <CardPlaceHolder id ="6" component={cardsDeckArray[6].card}/>
             
           </Grid>
-          <Grid container item xs = {4} alignItems="center" justify="flex-end">
+
+          <Grid container item xs = {4} alignItems="flex-end" justify="center">
+            
+            <AddNewCardTooltip state = {state}/>
+          </Grid>
+
+
+          <Grid container item xs = {4} alignItems="stretch" justify="flex-end">
               <Result deckArray = {cardsDeckArray}></Result>
           </Grid>
+          
+          
         </Grid>
-        <Tooltip title="Add" aria-label="add">
-        <Fab color="primary" className={classes.fab}>
-          <AddIcon />
-        </Fab>
-      </Tooltip>
       </Grid>
+
     </DndProvider>
   </React.Fragment>
   );

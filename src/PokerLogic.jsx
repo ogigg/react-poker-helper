@@ -1,5 +1,7 @@
 import React, { useState, useEffect ,setState, useRef } from 'react';
 import { useStyles } from './styles'
+import { cardValues } from './msc/Cards'
+
 
 const alSameSuit = (cards) => {
     let suit = cards[0].suit; 
@@ -88,7 +90,7 @@ const straightFlush = (cards) => {
     let previousNumber = '';
     let sortedCards = sortCards(cards);
     let cardsWithStraight = [];
-    console.log(sortedCards);
+    // console.log(sortedCards);
     let diamonds = 0;
     let spades = 0;
     let hearts = 0;
@@ -157,8 +159,8 @@ const straightFlush = (cards) => {
 }
 
 const fullHouse = (cards) => { //One pair and three of a kind
-    console.log(`pary : ${getPairs(cards)} ${getTriples(cards)}`)
-    console.log()
+    // console.log(`pary : ${getPairs(cards)} ${getTriples(cards)}`)
+    // console.log()
     if(cards.filter(c => c.suit != "").length >=5 && getPairs(cards) >= 1 && getTriples(cards) >= 1)
         return(<p> Full </p>);
     else
@@ -167,7 +169,7 @@ const fullHouse = (cards) => { //One pair and three of a kind
 
 const fourOfKind = (cards) =>{
     let totalNumberOfFours = 0;
-    ['2','3','4','5','6','7','8','9','10','J','Q','K','A'].map((number) =>{
+    cardValues.map((number) =>{
         let numberOfFours = 0;
         cards.forEach(card => {   
             if(card.number == number){
@@ -224,7 +226,7 @@ const straight = (cards) => { //5 cards in a row
     let previousNumber = '';
     let sortedCards = sortCards(cards);
     let cardsWithStraight = [];
-    console.log(sortedCards);
+    // console.log(sortedCards);
     //check if ace is in cards and check for ace-straight (A 2 3 4 5) or (10 J Q K A)
     if(sortedCards.some(o=>o.number == 'A'))
         if( sortedCards.some(o=>o.number == '2') && 
