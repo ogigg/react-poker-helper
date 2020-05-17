@@ -31,6 +31,10 @@ import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import Zoom from '@material-ui/core/Zoom';
 import AddNewCardTooltip from './AddCardDialog';
+import InstructionDialog from './instructionDialog';
+import CookieConsentDialog from './CookieConsentDialog';
+import Cookies from 'js-cookie';
+
 
 function Header(props){
   let button;
@@ -110,6 +114,7 @@ function HomePage(){
   const [isCardCreated, setIsCardCreated] = useState('');
   const [placeholderId, setPlaceholderId] = useState('');
   const [sourceId, setSourceId] = useState('');
+  const [instructionDialog, setInstructionDialog] = useState(false);
   const [cardAttr, setCardAttr] = useState({
      number: 5, 
      suit: 'heart' , 
@@ -120,6 +125,19 @@ function HomePage(){
   const state = {
     cardAttr: [cardAttr, setCardAttr],
   }
+
+
+  useEffect(() => {
+    
+    if(!Cookies.get('showInstruction')){ //if this is first visit on a page
+      Cookies.set('showInstruction', true)
+      console.log("Pokaz instrukcje")
+      setInstructionDialog(true);
+
+    }
+
+  }, []);
+
   if(cardAttr.isNowCreated){
     // console.log("Upuszczono na : " + cardAttr.destination)
     setCardAttr({...cardAttr, isNowCreated: false});
@@ -156,6 +174,8 @@ function HomePage(){
   // useEffect([cardAttr]);
   return (
     <React.Fragment>
+      <InstructionDialog open = {instructionDialog}></InstructionDialog>
+      <CookieConsentDialog ></CookieConsentDialog>
       <DndProvider backend={Backend}>
       <Grid container>
         <h2 className = "h2-text">Karty na stole: </h2>
