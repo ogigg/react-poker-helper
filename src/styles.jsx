@@ -62,8 +62,9 @@ export const useStyles = makeStyles(theme => ({
       fontSize: "2vw",
     },
     result: {
-      borderStyle: "dashed",
+      // borderStyle: "dashed",
       color: 'white'
+
     },
     avatar: {
       backgroundColor: 'transparent',
@@ -86,6 +87,22 @@ export const useStyles = makeStyles(theme => ({
       padding: '20px',
       margin: '20px',
       spacing: '20px',
+    },
+    suitSelector: {
+      margin: '10px',
+    },
+    numberSelector: {
+      'margin-bottom': '5px',
+      minHeight : '40px',
+      textAlign : 'center',
+      '& > *': {
+        height: '100%', 
+      },
+    },
+    numberSelectAvatar : {
+      margin: 'auto',
+      textAlign: 'center',
     }
+
   
   }));

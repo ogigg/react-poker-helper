@@ -70,6 +70,7 @@ function SimpleDialog(props) {
     display: 'flex',
     flexDirection: 'row',
     padding: 0,
+
   };
 
 
@@ -81,7 +82,7 @@ function SimpleDialog(props) {
 
     <List style={flexContainer}>
     {cardSuits.map(suit => (
-          <ListItem button onClick={() => setSuit(suit)} key={suit}>
+          <ListItem button onClick={() => setSuit(suit)} key={suit} className = {classes.suitSelector}>
             <ListItemAvatar>
               <Avatar  className={`${classes.avatar} 
               ${suit.color === 'red'? classes.redColor : classes.blackColor } `}
@@ -97,9 +98,10 @@ function SimpleDialog(props) {
 
       <List className={`${classes.cardsList}`} >
         {cardValues.map(cardNumber => (
-          <Card>
-          <ListItem button onClick={() => setNumber(cardNumber)} key={cardNumber}>
-            <ListItemAvatar>
+
+          <Card className = {classes.numberSelector} >
+          <ListItem  button onClick={() => setNumber(cardNumber)} key={cardNumber} className = {classes.numberSelector}  >
+            <ListItemAvatar className = {classes.numberSelectAvatar}>
               <div  className={`${selectedSuit.color === 'red'? classes.redColor : classes.blackColor } `}>
                 {selectedSuit.sign}
               </div>
@@ -108,8 +110,8 @@ function SimpleDialog(props) {
           </ListItem>
           </Card>
         ))}
-        <Card>
-          <ListItem button onClick = {randomCard} key={"A"}>
+        <Card className = {classes.numberSelector} >
+          <ListItem button onClick = {randomCard} key={"A"} className = {classes.numberSelector} >
             <ListItemText primary={"Losowa karta"}  />
           </ListItem>
           </Card>

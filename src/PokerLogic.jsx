@@ -313,7 +313,7 @@ const sortCards = (cards) => {
 export const Result = (props) =>{
     let deckArray = props.deckArray;
     const classes = useStyles();
-
+    
     return(<div className = {classes.result}>
         {pairs(deckArray)} 
         {threeOfAKind(deckArray)}  
